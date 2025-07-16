@@ -31,6 +31,12 @@ jobs:
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
           echo "GITHUB_TOKEN=${{ secrets.MY_GITHUB_TOKEN }}" >> local.properties
+          echo "${{ secrets.SIGN_JKS }}" | base64 -d > sign.jks
+          echo "KEYSTORE_FILE=../sign.jks" >> local.properties
+          echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> local.properties
+          echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> local.properties
+          echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> local.properties
+
       - name: Build APK
         run: ./gradlew assembleRelease --parallel
 
@@ -47,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-apk
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          path: app/build/outputs/apk/release/app-release.apk
 
       - name: Cache Gradle
         uses: actions/cache@v4
